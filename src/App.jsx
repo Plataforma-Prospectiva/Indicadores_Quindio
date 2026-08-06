@@ -160,48 +160,6 @@ export default function App() {
             </div>
           </div>
         )}
-
-        {activeTab === 'turismo' && (
-          <div className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '20px' }}>
-            <div className="glass-panel" style={{ padding: '24px' }}>
-              <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: 'var(--accent-green-light)', marginBottom: '16px' }}>
-                Destinos Más Visitados (Ecoturismo)
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                {[
-                  { name: 'Valle de Cocora (Salento)', desc: 'Hogar del árbol nacional de Colombia, la Palma de Cera.', visitas: '35,000/mes' },
-                  { name: 'Filandia (Mirador)', desc: 'Hermoso municipio con arquitectura de la colonización antioqueña.', visitas: '12,000/mes' },
-                  { name: 'Montenegro (Parques Temáticos)', desc: 'Epicentro del entretenimiento y la cultura del café.', visitas: '22,000/mes' }
-                ].map((dest, idx) => (
-                  <div key={idx} style={{ padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.02)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>{dest.name}</strong>
-                      <span style={{ fontSize: '12px', color: 'var(--accent-gold)', fontWeight: '600' }}>{dest.visitas}</span>
-                    </div>
-                    <p style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{dest.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-              <Trees size={64} color="var(--accent-green-light)" style={{ marginBottom: '16px', filter: 'drop-shadow(var(--green-glow))' }} />
-              <h3 className="font-display" style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px' }}>
-                Turismo Sostenible y Biodiversidad
-              </h3>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', maxWidth: '400px', lineHeight: '1.6' }}>
-                Quindío está enfocado en proteger sus santuarios de flora y fauna. La tasa de retorno por ecoturismo contribuye directamente a fondos de reforestación y apoyo a comunidades nativas.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'finanzas' && (
-          <div className="animate-fade-in" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '20px' }}>
-            <TransactionForm onAgregar={handleAgregarTransaccion} />
-            <TransactionList transacciones={transacciones} />
-          </div>
-        )}
       </main>
     </div>
   );

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Search, Eye, ExternalLink, RefreshCw, AlertCircle, Server, Info, X, 
-  Folder, FolderOpen, ChevronRight, ChevronDown, Check, Shield, 
-  Compass, DollarSign, Trees, BookOpen, FileText, Activity
+  Folder, FolderOpen, ChevronRight, ChevronDown, Shield, 
+  Compass, DollarSign, Trees, BookOpen, FileText, Database, Activity
 } from 'lucide-react';
 import indicadoresList from '../data/indicadores.json';
 
@@ -11,9 +11,9 @@ export default function ApiIndicators() {
   const [search, setSearch] = useState('');
   const [selectedMunicipio, setSelectedMunicipio] = useState('TODOS');
   
-  // Estados de Expansión de la Jerarquía
+  // Estados de Expansión del Carbon Tree View
   const [expandedSectors, setExpandedSectors] = useState({
-    'Económico productivo': false,
+    'Económico productivo': true,
     'Físico-Ambiental': false,
     'Integral': false,
     'Político – Institucional': false,
@@ -78,11 +78,11 @@ export default function ApiIndicators() {
 
   // Iconos por Sector
   const sectorIcons = {
-    'Económico productivo': <DollarSign size={18} className="text-amber-400" />,
-    'Físico-Ambiental': <Trees size={18} className="text-emerald-400" />,
-    'Integral': <Compass size={18} className="text-sky-400" />,
-    'Político – Institucional': <Shield size={18} className="text-rose-400" />,
-    'Socio – Cultural': <BookOpen size={18} className="text-fuchsia-400" />
+    'Económico productivo': <DollarSign size={15} className="text-amber-400" />,
+    'Físico-Ambiental': <Trees size={15} className="text-emerald-400" />,
+    'Integral': <Compass size={15} className="text-sky-400" />,
+    'Político – Institucional': <Shield size={15} className="text-rose-400" />,
+    'Socio – Cultural': <BookOpen size={15} className="text-fuchsia-400" />
   };
 
   // Filtrar la lista
@@ -99,7 +99,7 @@ export default function ApiIndicators() {
     return matchesSearch && matchesMunicipio;
   });
 
-  // Auto-expandir todo si hay una búsqueda activa para facilitar la exploración
+  // Auto-expandir todo si hay una búsqueda activa
   useEffect(() => {
     if (search) {
       setExpandedSectors({
@@ -110,7 +110,6 @@ export default function ApiIndicators() {
         'Socio – Cultural': true
       });
       
-      // Auto expandir todos los municipios que tengan resultados
       const munisToExpand = {};
       filteredIndicadores.forEach(item => {
         const key = `${item.sectorMapeado}-${item.municipio || 'Departamental'}`;
@@ -137,7 +136,7 @@ export default function ApiIndicators() {
       setPreviewData(data);
     } catch (err) {
       console.error(err);
-      setPreviewError('No se pudieron obtener registros en vivo. El dataset podría estar inactivo, requerir clave de API o tener restricciones CORS.');
+      setPreviewError('No se pudieron obtener registros en vivo. El dataset podría estar inactivo o requerir autenticación.');
     } finally {
       setPreviewLoading(false);
     }
@@ -175,50 +174,51 @@ export default function ApiIndicators() {
       <div className="glass-panel" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h3 className="font-display" style={{ fontSize: '20px', fontWeight: '800', color: 'var(--accent-gold)', margin: 0 }}>
-            Visualización Jerárquica de Indicadores del Quindío
+            Carbon Tree View: Indicadores por Sectores Temáticos
           </h3>
           <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px', marginBottom: 0 }}>
-            Explora de forma estructurada los datasets distribuidos por sectores temáticos, entidades y municipios.
+            Navegación jerárquica inspirada en Carbon Design System. Explora carpetas y subcarpetas de datasets oficiales del Quindío.
           </p>
         </div>
         <div className="glass-panel" style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.02)' }}>
           <Activity size={14} className="text-emerald-400" />
-          <span>Estructura multinivel activa</span>
+          <span>Tree View v2.0 Activo</span>
         </div>
       </div>
 
       {/* Controles de Búsqueda y Filtros Rápidos */}
-      <div className="glass-panel" style={{ padding: '20px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
         
         {/* Buscador */}
         <div style={{ flex: 1, minWidth: '280px', position: 'relative' }}>
-          <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+          <Search size={16} color="var(--text-secondary)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
-            placeholder="Filtrar indicadores dentro de la jerarquía por nombre o entidad..."
+            placeholder="Buscar por indicador, descripción o entidad en el árbol..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
               width: '100%',
-              padding: '10px 12px 10px 40px',
-              borderRadius: '8px',
+              padding: '8px 12px 8px 36px',
+              borderRadius: '6px',
               border: '1px solid var(--panel-border)',
               background: 'rgba(255,255,255,0.02)',
               color: 'var(--text-primary)',
-              fontSize: '14px',
+              fontSize: '13px',
               outline: 'none'
             }}
           />
         </div>
 
         {/* Filtro Municipio */}
-        <div style={{ minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <div style={{ minWidth: '200px' }}>
           <select
             value={selectedMunicipio}
             onChange={(e) => setSelectedMunicipio(e.target.value)}
             style={{
-              padding: '10px 12px',
-              borderRadius: '8px',
+              width: '100%',
+              padding: '8px 12px',
+              borderRadius: '6px',
               border: '1px solid var(--panel-border)',
               background: '#0d1611',
               color: 'var(--text-primary)',
@@ -227,7 +227,7 @@ export default function ApiIndicators() {
               cursor: 'pointer'
             }}
           >
-            <option value="TODOS">Filtrar por Municipio (Todos)</option>
+            <option value="TODOS">Todos los Municipios</option>
             {municipios.filter(m => m !== 'TODOS').map(m => (
               <option key={m} value={m}>{m}</option>
             ))}
@@ -247,23 +247,29 @@ export default function ApiIndicators() {
         )}
       </div>
 
-      {/* Grid: Hierarchy Explorer + Live Preview Panel */}
-      <div style={{ display: 'grid', gridTemplateColumns: previewDataset ? '1.2fr 1fr' : '1fr', gap: '20px', transition: 'all 0.3s ease' }}>
+      {/* Grid: Carbon Tree View + Live Preview Panel */}
+      <div style={{ display: 'grid', gridTemplateColumns: previewDataset ? '1.3fr 1fr' : '1fr', gap: '20px', transition: 'all 0.3s ease' }}>
         
-        {/* Hierarchy Visualization Panel */}
-        <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '400px' }}>
+        {/* Carbon Design System Tree View */}
+        <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '450px' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '10px' }}>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider">Explorador Temático</h4>
-            <span className="text-xs text-slate-400">Total coincidencias: <strong>{filteredIndicadores.length}</strong></span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '10px' }}>
+            <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <Folder size={14} className="text-amber-400" />
+              Árbol de Directorios (Sectores Temáticos)
+            </span>
+            <span className="text-[11px] text-slate-400 font-mono">
+              Coincidencias: <strong className="text-amber-400">{filteredIndicadores.length}</strong> / {indicadoresList.length}
+            </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {/* Tree View Structure Container */}
+          <div className="font-mono text-xs select-none space-y-1" style={{ maxHeight: '650px', overflowY: 'auto', paddingRight: '4px' }}>
+            
             {sectoresPermitidos.map(sector => {
               const munisObj = hierarchyData[sector] || {};
               const munisList = Object.keys(munisObj).sort();
               
-              // Contar cuántos indicadores hay en este sector
               let countInSector = 0;
               munisList.forEach(m => {
                 countInSector += munisObj[m].length;
@@ -272,38 +278,37 @@ export default function ApiIndicators() {
               const isSectorExpanded = expandedSectors[sector];
 
               return (
-                <div key={sector} className="border border-white/5 rounded-xl overflow-hidden bg-white/1" style={{ transition: 'all 0.2s' }}>
+                <div key={sector} className="rounded border border-transparent">
                   
-                  {/* Fila del Sector (Nivel 1) */}
+                  {/* CARBON TREE LEVEL 1: SECTOR */}
                   <div 
                     onClick={() => toggleSector(sector)}
-                    style={{
-                      padding: '14px 16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      background: isSectorExpanded ? 'rgba(255,255,255,0.03)' : 'transparent',
-                      cursor: 'pointer',
-                      userSelect: 'none'
-                    }}
+                    className={`flex items-center justify-between px-2 py-1.5 rounded cursor-pointer transition-all duration-150 ${
+                      isSectorExpanded ? 'bg-white/5 text-white font-bold' : 'text-slate-300 hover:bg-white/3'
+                    }`}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      {sectorIcons[sector]}
-                      <span className="font-bold text-sm text-white font-display">{sector}</span>
-                      <span className="bg-white/5 border border-white/10 text-slate-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        {countInSector}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-slate-400 p-0.5 hover:text-white">
+                        {isSectorExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </span>
+                      {isSectorExpanded ? (
+                        <FolderOpen size={16} className="text-amber-400" />
+                      ) : (
+                        <Folder size={16} className="text-amber-400/80" />
+                      )}
+                      <span className="text-xs">{sector}</span>
                     </div>
-                    <div className="text-slate-400">
-                      {isSectorExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                    </div>
+
+                    <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded text-slate-400 font-bold border border-white/5">
+                      {countInSector}
+                    </span>
                   </div>
 
-                  {/* Municipios del Sector (Nivel 2) */}
+                  {/* CARBON TREE LEVEL 2: MUNICIPIOS */}
                   {isSectorExpanded && (
-                    <div style={{ padding: '8px 16px 16px 36px', display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid rgba(255,255,255,0.02)' }}>
+                    <div className="ml-3 pl-3 border-l border-white/10 space-y-1 my-1">
                       {countInSector === 0 ? (
-                        <span className="text-xs text-slate-500 italic py-2">Sin indicadores que coincidan en este sector.</span>
+                        <div className="text-[11px] text-slate-500 italic py-1 pl-4">No hay indicadores coincidentes.</div>
                       ) : (
                         munisList.map(muni => {
                           const indicators = munisObj[muni] || [];
@@ -311,70 +316,77 @@ export default function ApiIndicators() {
                           const isMuniExpanded = expandedMunis[muniKey];
 
                           return (
-                            <div key={muni} className="border-l border-white/5 pl-3">
+                            <div key={muni}>
                               
-                              {/* Fila de Municipio */}
+                              {/* CARBON SUB-FOLDER ROW */}
                               <div 
                                 onClick={() => toggleMuni(sector, muni)}
-                                style={{
-                                  padding: '6px 8px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px',
-                                  cursor: 'pointer',
-                                  userSelect: 'none'
-                                }}
+                                className={`flex items-center justify-between px-2 py-1 rounded cursor-pointer transition-all duration-150 ${
+                                  isMuniExpanded ? 'bg-white/4 text-white font-semibold' : 'text-slate-300 hover:bg-white/2'
+                                }`}
                               >
-                                {isMuniExpanded ? <FolderOpen size={16} className="text-amber-400" /> : <Folder size={16} className="text-amber-500" />}
-                                <span className="text-xs font-semibold text-slate-300">{muni}</span>
-                                <span className="text-[10px] text-slate-500 font-bold bg-white/2 border border-white/5 px-1.5 py-0.2 rounded-md">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-slate-400">
+                                    {isMuniExpanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+                                  </span>
+                                  {isMuniExpanded ? (
+                                    <FolderOpen size={14} className="text-sky-400" />
+                                  ) : (
+                                    <Folder size={14} className="text-sky-400/70" />
+                                  )}
+                                  <span className="text-xs">{muni}</span>
+                                </div>
+
+                                <span className="text-[10px] text-slate-500 font-bold">
                                   {indicators.length}
                                 </span>
                               </div>
 
-                              {/* Indicadores del Municipio (Nivel 3) */}
+                              {/* CARBON TREE LEVEL 3: DATASET LEAF NODES */}
                               {isMuniExpanded && (
-                                <div style={{ padding: '6px 0 6px 24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                  {indicators.map(item => (
-                                    <div 
-                                      key={item.uid}
-                                      style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        padding: '8px 12px',
-                                        background: previewDataset?.uid === item.uid ? 'rgba(255,215,0,0.03)' : 'rgba(255,255,255,0.01)',
-                                        border: previewDataset?.uid === item.uid ? '1px solid rgba(255,215,0,0.2)' : '1px solid rgba(255,255,255,0.02)',
-                                        borderRadius: '8px',
-                                        transition: 'background 0.2s'
-                                      }}
-                                    >
-                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', flex: 1, paddingRight: '12px' }}>
-                                        <a 
-                                          href={item.url}
-                                          target="_blank"
-                                          rel="noreferrer"
-                                          className="text-xs font-bold text-slate-200 hover:text-amber-400 transition-colors inline-flex items-center gap-1.5"
-                                          style={{ textDecoration: 'none' }}
-                                        >
-                                          {item.nombre}
-                                          <ExternalLink size={11} className="opacity-70 flex-shrink-0" />
-                                        </a>
-                                        {item.descripcion && (
-                                          <span className="text-[10px] text-slate-500 line-clamp-1">{item.descripcion}</span>
-                                        )}
-                                        <span className="text-[9px] text-slate-400">Entidad: {item.entidad} | Visitas: {item.visitas.toLocaleString()}</span>
-                                      </div>
-                                      
-                                      <button
-                                        onClick={() => handleLoadPreview(item)}
-                                        className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/25 px-2.5 py-1 rounded text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                                <div className="ml-3 pl-3 border-l border-white/10 space-y-1 my-1">
+                                  {indicators.map(item => {
+                                    const isSelected = previewDataset?.uid === item.uid;
+                                    return (
+                                      <div 
+                                        key={item.uid}
+                                        className={`group flex items-center justify-between py-1.5 px-2 rounded transition-all duration-150 border-l-2 ${
+                                          isSelected 
+                                            ? 'bg-amber-500/15 text-white border-amber-400' 
+                                            : 'border-transparent text-slate-300 hover:bg-white/3'
+                                        }`}
                                       >
-                                        <Eye size={12} />
-                                        <span>Ver Datos</span>
-                                      </button>
-                                    </div>
-                                  ))}
+                                        <div className="flex items-center gap-2 overflow-hidden flex-1 pr-2">
+                                          <FileText size={14} className={isSelected ? 'text-amber-400 flex-shrink-0' : 'text-slate-400 flex-shrink-0'} />
+                                          <a 
+                                            href={item.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-xs text-slate-200 hover:text-amber-400 transition-colors truncate font-sans font-semibold flex items-center gap-1"
+                                            title={item.nombre}
+                                            style={{ textDecoration: 'none' }}
+                                          >
+                                            {item.nombre}
+                                            <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                                          </a>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                          <span className="text-[10px] text-slate-500 hidden sm:inline">
+                                            {item.visitas.toLocaleString()} visitas
+                                          </span>
+                                          <button
+                                            onClick={() => handleLoadPreview(item)}
+                                            className="bg-emerald-500/10 hover:bg-emerald-500/25 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-sans font-bold flex items-center gap-1 transition-all cursor-pointer"
+                                            title="Previsualizar registros en vivo"
+                                          >
+                                            <Eye size={11} />
+                                            <span>Ver Datos</span>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               )}
 
@@ -388,6 +400,7 @@ export default function ApiIndicators() {
                 </div>
               );
             })}
+
           </div>
 
         </div>
@@ -395,7 +408,7 @@ export default function ApiIndicators() {
         {/* Live Preview Panel */}
         {previewDataset && (
           <div className="glass-panel" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', height: 'fit-content', border: '1px solid var(--accent-gold)' }}>
-            <div style={{ display: 'flex', justifyCovegnnt: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <span style={{ fontSize: '10px', color: 'var(--accent-gold)', fontWeight: 'bold', textTransform: 'uppercase', tracking: '1px' }}>
                   Previsualizador en Vivo SODA
@@ -414,7 +427,7 @@ export default function ApiIndicators() {
 
             <div style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '6px', padding: '12px', borderRadius: '8px', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.04)' }}>
               <div><strong>ID del Dataset:</strong> {previewDataset.uid}</div>
-              <div><strong>Sector Mapeado:</strong> <span className="text-amber-400 font-bold">{previewDataset.sectorMapeado}</span></div>
+              <div><strong>Sector Carbon:</strong> <span className="text-amber-400 font-bold">{previewDataset.sectorMapeado}</span></div>
               <div><strong>Entidad:</strong> {previewDataset.entidad}</div>
               <div><strong>Municipio:</strong> {previewDataset.municipio || 'Departamental'}</div>
               <div><strong>Total Registros:</strong> {previewDataset.filas > 0 ? previewDataset.filas.toLocaleString() : 'No especificado'}</div>

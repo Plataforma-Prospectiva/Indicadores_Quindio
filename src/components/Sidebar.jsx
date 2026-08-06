@@ -6,8 +6,6 @@ export default function Sidebar({ activeTab, setActiveTab }) {
     { id: 'dashboard', label: 'Resumen General', icon: Compass },
     { id: 'api_data', label: 'Indicadores Quindío (API)', icon: Database },
     { id: 'cafe', label: 'Café & Cosechas', icon: Coffee },
-    { id: 'turismo', label: 'Turismo & Destinos', icon: MapPin },
-    { id: 'finanzas', label: 'Presupuesto Departamental', icon: DollarSign },
   ];
 
   return (
