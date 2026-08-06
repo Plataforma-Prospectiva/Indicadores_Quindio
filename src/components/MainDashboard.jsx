@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import { 
   Coffee, Leaf, TrendingUp, TrendingDown, Layers, FileText, 
-  AlertTriangle, ArrowUpRight, PlusCircle, Globe, RefreshCw 
+  AlertTriangle, ArrowUpRight, PlusCircle, Globe, Activity 
 } from 'lucide-react';
 
 export default function MainDashboard() {
@@ -47,7 +47,6 @@ export default function MainDashboard() {
     .filter(t => t.origen === 'Privado')
     .reduce((acc, t) => acc + (t.tipo === 'ingreso' ? t.monto : -t.monto), 0);
 
-  // Asegurar que no grafiquemos valores negativos en el PieChart (usamos montos absolutos o flujos acumulados positivos)
   const pieData = [
     { name: 'Público', value: Math.max(0, totalPublico) },
     { name: 'Privado', value: Math.max(0, totalPrivado) }
@@ -60,13 +59,13 @@ export default function MainDashboard() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIndicadoresApi([
-        { id: 1, nombre: 'Tasa de Desempleo', valor: '11.2%', sub: '-0.8% vs año anterior', tendencia: 'up' },
-        { id: 2, nombre: 'Índice de Competitividad', valor: '5.84 / 10', sub: 'Puesto 8 a nivel nacional', tendencia: 'up' },
-        { id: 3, nombre: 'PIB Departamental (Crecimiento)', valor: '+2.4%', sub: 'Impulsado por Agro y Turismo', tendencia: 'up' },
-        { id: 4, nombre: 'Cobertura Conectividad Rural', valor: '68.5%', sub: '+4.1% este trimestre', tendencia: 'up' }
+        { id: 1, nombre: 'Tasa de Desempleo', valor: '11.2%', sub: '-0.8% vs año anterior' },
+        { id: 2, nombre: 'Índice de Competitividad', valor: '5.84 / 10', sub: 'Puesto 8 nacional' },
+        { id: 3, nombre: 'Crecimiento PIB Anual', valor: '+2.4%', sub: 'Agro & Ecoturismo' },
+        { id: 4, nombre: 'Cobertura Conectividad Rural', valor: '68.5%', sub: '+4.1% este trim.' }
       ]);
       setLoadingApi(false);
-    }, 1500);
+    }, 1200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -75,8 +74,8 @@ export default function MainDashboard() {
     { name: 'Educación', datasets: 180, visitas: 15000, color: '#3b82f6' },
     { name: 'Transporte', datasets: 25, visitas: 340000, color: '#ef4444' },
     { name: 'Salud', datasets: 90, visitas: 85000, color: '#10b981' },
-    { name: 'Hacienda', datasets: 60, visitas: 50000, color: '#f59e0b' },
-    { name: 'Cultura', datasets: 40, visitas: 20000, color: '#8b5cf6' }
+    { name: 'Hacienda', datasets: 60, visitas: 50000, color: '#d4af37' },
+    { name: 'Cultura', datasets: 40, visitas: 20000, color: '#a855f7' }
   ];
 
   const barData = [
@@ -88,60 +87,83 @@ export default function MainDashboard() {
     { id: 1, nombre: 'Graduados por programa', visitas: 182500, calidad: 9.2 },
     { id: 2, nombre: 'Vehículos matriculados', visitas: 143200, calidad: 8.9 },
     { id: 3, nombre: 'Accidentes de tránsito', visitas: 128400, calidad: 8.5 },
-    { id: 4, nombre: 'Estudiantes Uniquindio', visitas: 95600, calidad: 9.0 },
+    { id: 4, font: 'Uniquindio', nombre: 'Estudiantes Uniquindio', visitas: 95600, calidad: 9.0 },
     { id: 5, nombre: 'Propiedad Horizontal Armenia', visitas: 82100, calidad: 8.7 }
   ];
 
+  // Custom Dark Tooltip
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#0b130e] border border-white/10 p-3 rounded-lg shadow-xl text-xs text-slate-200">
+          <p className="font-bold text-white mb-1">{payload[0].payload.name || payload[0].name}</p>
+          {payload.map((p, idx) => (
+            <p key={idx} style={{ color: p.color || '#fff' }}>
+              {p.name}: {typeof p.value === 'number' ? p.value.toLocaleString() : p.value}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="bg-slate-50 min-height-screen text-slate-800 p-6 space-y-6">
+    <div className="text-slate-200 space-y-6 animate-fade-in" style={{ padding: '0px' }}>
       
-      {/* SECCIÓN 3: Monitor de Café y Cosechas (Colocado arriba para vista general inmediata) */}
+      {/* SECCIÓN 3: Monitor de Café y Cosechas */}
       <div className="space-y-4">
-        <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-          <Coffee className="text-amber-700" />
+        <h3 className="text-lg font-bold text-white flex items-center gap-2 font-display">
+          <Coffee size={20} className="text-amber-500" />
           Monitor de Café y Cosechas
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Card 1 */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex justify-between items-center">
-            <div>
-              <p className="text-sm font-semibold text-slate-400">Volumen Producido</p>
-              <h4 className="text-2xl font-bold text-slate-800 mt-1">15,300 Sacos</h4>
-              <div className="flex items-center gap-1 text-emerald-600 text-xs font-semibold mt-2">
-                <TrendingUp size={14} />
-                <span>+12.4% vs mes anterior</span>
+          <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid var(--accent-gold)' }}>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Volumen Producido</p>
+                <h4 className="text-2xl font-bold text-white mt-1">15,300 Sacos</h4>
+                <div className="flex items-center gap-1 text-emerald-400 text-xs font-semibold mt-2">
+                  <TrendingUp size={14} />
+                  <span>+12.4% vs mes anterior</span>
+                </div>
               </div>
-            </div>
-            <div className="bg-amber-50 p-4 rounded-xl text-amber-700">
-              <Coffee size={24} />
+              <div className="bg-amber-500/10 p-3 rounded-xl text-amber-400 border border-amber-500/20">
+                <Coffee size={20} />
+              </div>
             </div>
           </div>
           {/* Card 2 */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex justify-between items-center">
-            <div>
-              <p className="text-sm font-semibold text-slate-400">Proyección de Cosecha</p>
-              <h4 className="text-2xl font-bold text-slate-800 mt-1">18,500 Sacos</h4>
-              <div className="flex items-center gap-1 text-emerald-600 text-xs font-semibold mt-2">
-                <TrendingUp size={14} />
-                <span>+5.1% proyectado</span>
+          <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid var(--accent-green-light)' }}>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Proyección de Cosecha</p>
+                <h4 className="text-2xl font-bold text-white mt-1">18,500 Sacos</h4>
+                <div className="flex items-center gap-1 text-emerald-400 text-xs font-semibold mt-2">
+                  <TrendingUp size={14} />
+                  <span>+5.1% proyectado</span>
+                </div>
               </div>
-            </div>
-            <div className="bg-emerald-50 p-4 rounded-xl text-emerald-700">
-              <Leaf size={24} />
+              <div className="bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20">
+                <Leaf size={20} />
+              </div>
             </div>
           </div>
           {/* Card 3 */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs flex justify-between items-center">
-            <div>
-              <p className="text-sm font-semibold text-slate-400">Rendimiento por Hectárea</p>
-              <h4 className="text-2xl font-bold text-slate-800 mt-1">1.45 Ton/Ha</h4>
-              <div className="flex items-center gap-1 text-rose-600 text-xs font-semibold mt-2">
-                <TrendingDown size={14} />
-                <span>-2.3% por lluvias</span>
+          <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid #3b82f6' }}>
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Rendimiento por Hectárea</p>
+                <h4 className="text-2xl font-bold text-white mt-1">1.45 Ton/Ha</h4>
+                <div className="flex items-center gap-1 text-rose-400 text-xs font-semibold mt-2">
+                  <TrendingDown size={14} />
+                  <span>-2.3% por lluvias</span>
+                </div>
               </div>
-            </div>
-            <div className="bg-sky-50 p-4 rounded-xl text-sky-700">
-              <Layers size={24} />
+              <div className="bg-sky-500/10 p-3 rounded-xl text-sky-400 border border-sky-500/20">
+                <Layers size={20} />
+              </div>
             </div>
           </div>
         </div>
@@ -150,11 +172,11 @@ export default function MainDashboard() {
       {/* Main Grid: Dos columnas para distribuir los módulos principales */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
-        {/* SECCIÓN 1: Análisis de Datos Abiertos Quindío (Ocupa 2/3 columnas en XL) */}
+        {/* SECCIÓN 1: Análisis de Datos Abiertos Quindío */}
         <div className="xl:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-              <FileText className="text-emerald-600" />
+          <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <h3 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/5 pb-3 font-display">
+              <FileText size={18} className="text-emerald-400" />
               Análisis de Datos Abiertos Quindío
             </h3>
 
@@ -163,16 +185,30 @@ export default function MainDashboard() {
               
               {/* Scatter / Burbujas */}
               <div className="space-y-2">
-                <h4 className="text-sm font-bold text-slate-700">Monopolio Temático vs. Interés Ciudadano</h4>
-                <p className="text-xs text-slate-400">Educación satura oferta; Transporte tiene demanda masiva.</p>
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Monopolio Temático vs. Interés Ciudadano</h4>
+                <p className="text-[11px] text-slate-400">Relación de cantidad de datasets vs total visitas por sector.</p>
                 <div className="h-60 mt-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 10 }}>
-                      <XAxis type="number" dataKey="datasets" name="Datasets publicados" label={{ value: 'Datasets', position: 'insideBottom', offset: -5, fontSize: 11 }} />
-                      <YAxis type="number" dataKey="visitas" name="Visitas Totales" label={{ value: 'Visitas', angle: -90, position: 'insideLeft', fontSize: 11 }} />
-                      <ZAxis type="number" range={[100, 400]} />
-                      <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                      <Scatter name="Sectores" data={scatterData} fill="#8884d8">
+                    <ScatterChart margin={{ top: 20, right: 10, bottom: 10, left: 0 }}>
+                      <XAxis 
+                        type="number" 
+                        dataKey="datasets" 
+                        stroke="var(--text-secondary)" 
+                        fontSize={10} 
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis 
+                        type="number" 
+                        dataKey="visitas" 
+                        stroke="var(--text-secondary)" 
+                        fontSize={10} 
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <ZAxis type="number" range={[100, 300]} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Scatter name="Sectores" data={scatterData}>
                         {scatterData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
@@ -180,10 +216,10 @@ export default function MainDashboard() {
                     </ScatterChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="flex gap-3 justify-center flex-wrap mt-2">
+                <div className="flex gap-2 justify-center flex-wrap mt-1">
                   {scatterData.map(s => (
-                    <span key={s.name} className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500">
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }}></span>
+                    <span key={s.name} className="inline-flex items-center gap-1 text-[10px] text-slate-400 font-semibold">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }}></span>
                       {s.name}
                     </span>
                   ))}
@@ -192,17 +228,17 @@ export default function MainDashboard() {
 
               {/* Bar Chart Armenia vs Calarcá */}
               <div className="space-y-2">
-                <h4 className="text-sm font-bold text-slate-700">Eficiencia Geográfica</h4>
-                <p className="text-xs text-slate-400">Armenia publica alto volumen vs Calarcá con captación eficiente.</p>
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Eficiencia Geográfica</h4>
+                <p className="text-[11px] text-slate-400">Volumen de publicación frente a visitas promedio por dataset.</p>
                 <div className="h-60 mt-4">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={barData} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
-                      <XAxis dataKey="name" />
-                      <YAxis yAxisId="left" orientation="left" stroke="#3b82f6" label={{ value: 'Datasets', angle: -90, position: 'insideLeft', offset: 0, fontSize: 10 }} />
-                      <YAxis yAxisId="right" orientation="right" stroke="#10b981" label={{ value: 'Visitas Promedio', angle: 90, position: 'insideRight', offset: 0, fontSize: 10 }} />
-                      <Tooltip />
-                      <Legend verticalAlign="top" height={36}/>
-                      <Bar yAxisId="left" dataKey="datasets" name="Total Datasets" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    <BarChart data={barData} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
+                      <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={10} tickLine={false} axisLine={false} />
+                      <YAxis yAxisId="left" orientation="left" stroke="#d4af37" fontSize={9} tickLine={false} axisLine={false} />
+                      <YAxis yAxisId="right" orientation="right" stroke="#10b981" fontSize={9} tickLine={false} axisLine={false} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Legend verticalAlign="top" height={36} iconSize={10} wrapperStyle={{ fontSize: '10px' }} />
+                      <Bar yAxisId="left" dataKey="datasets" name="Total Datasets" fill="#d4af37" radius={[4, 4, 0, 0]} />
                       <Bar yAxisId="right" dataKey="visitasPromedio" name="Visitas por Dataset" fill="#10b981" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -212,22 +248,22 @@ export default function MainDashboard() {
             </div>
 
             {/* KPI / Progress bar: Alerta de Mantenimiento */}
-            <div className="bg-amber-50/50 border border-amber-200/60 p-4 rounded-xl space-y-3">
+            <div className="bg-[#e6a100]/5 border border-[#e6a100]/20 p-4 rounded-xl space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-bold text-amber-800 flex items-center gap-1.5">
-                  <AlertTriangle size={16} />
+                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase tracking-wider">
+                  <AlertTriangle size={15} />
                   Alerta de Mantenimiento de Datos
                 </span>
-                <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-100">
-                  Estado Crítico
+                <span className="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                  Desactualizado
                 </span>
               </div>
               <div className="space-y-1">
-                <div className="flex justify-between text-xs text-slate-500">
+                <div className="flex justify-between text-xs text-slate-400">
                   <span>Actualización Prometida: Semestral (180 días)</span>
-                  <span className="font-bold text-slate-700">Realidad: Promedio 607 días de retraso</span>
+                  <span className="font-bold text-amber-400">Promedio Real: 607 días de retraso</span>
                 </div>
-                <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                   <div className="bg-rose-500 h-full rounded-full" style={{ width: '85%' }}></div>
                 </div>
               </div>
@@ -235,28 +271,28 @@ export default function MainDashboard() {
 
             {/* Tabla de Blockbusters */}
             <div className="space-y-3">
-              <h4 className="text-sm font-bold text-slate-700">Top 5 Datasets Más Vistos (Blockbusters)</h4>
+              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Top 5 Datasets Más Vistos</h4>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-slate-100 text-slate-400">
-                      <th className="py-2.5">Dataset</th>
-                      <th className="py-2.5 text-right">Visitas</th>
-                      <th className="py-2.5 text-right">Calidad Global</th>
+                    <tr className="border-b border-white/5 text-slate-400">
+                      <th className="py-2">Dataset</th>
+                      <th className="py-2 text-right">Visitas</th>
+                      <th className="py-2 text-right">Calidad</th>
                     </tr>
                   </thead>
                   <tbody>
                     {blockbusters.map((item, idx) => (
-                      <tr key={item.id} className="border-b border-slate-50 hover:bg-slate-50/50">
-                        <td className="py-2.5 font-medium text-slate-800 flex items-center gap-2">
-                          <span className="w-5 h-5 flex items-center justify-center rounded-full bg-emerald-50 text-[10px] font-bold text-emerald-700">
+                      <tr key={item.id} className="border-b border-white/2 hover:bg-white/1 transition-colors">
+                        <td className="py-2.5 font-medium text-slate-200 flex items-center gap-2">
+                          <span className="w-5 h-5 flex items-center justify-center rounded-full bg-white/5 text-[9px] font-bold text-slate-300">
                             {idx + 1}
                           </span>
                           {item.nombre}
                         </td>
-                        <td className="py-2.5 text-right font-semibold text-slate-700">{item.visitas.toLocaleString()}</td>
+                        <td className="py-2.5 text-right font-semibold text-slate-300">{item.visitas.toLocaleString()}</td>
                         <td className="py-2.5 text-right">
-                          <span className="bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md">
+                          <span className="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded border border-emerald-500/20">
                             {item.calidad}
                           </span>
                         </td>
@@ -274,57 +310,89 @@ export default function MainDashboard() {
         <div className="space-y-6">
           
           {/* SECCIÓN 2: Módulo de Flujo Presupuestal */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">
+          <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <h3 className="text-base font-bold text-white border-b border-white/5 pb-3 font-display">
               Registrar Flujo Presupuestal
             </h3>
             
             {/* Formulario */}
             <form onSubmit={handleAddTransaccion} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2">
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">CONCEPTO</label>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-1">CONCEPTO</label>
                   <input
                     type="text"
                     required
-                    placeholder="Ej. Insumos agro"
+                    placeholder="Ej. Insumos o Patrocinio"
                     value={concepto}
                     onChange={(e) => setConcepto(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg outline-none bg-slate-50 focus:bg-white focus:border-emerald-500"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--panel-border)',
+                      background: '#0d1611',
+                      color: 'var(--text-primary)',
+                      fontSize: '13px',
+                      outline: 'none'
+                    }}
                   />
                 </div>
-                <div>
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">MONTO (COP)</label>
-                  <input
-                    type="number"
-                    required
-                    placeholder="Valor"
-                    value={monto}
-                    onChange={(e) => setMonto(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg outline-none bg-slate-50 focus:bg-white focus:border-emerald-500"
-                  />
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 block mb-1">VALOR (COP)</label>
+                    <input
+                      type="number"
+                      required
+                      placeholder="Monto"
+                      value={monto}
+                      onChange={(e) => setMonto(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--panel-border)',
+                        background: '#0d1611',
+                        color: 'var(--text-primary)',
+                        fontSize: '13px',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 block mb-1">ORIGEN CAPITAL</label>
+                    <select
+                      value={origen}
+                      onChange={(e) => setOrigen(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--panel-border)',
+                        background: '#0d1611',
+                        color: 'var(--text-primary)',
+                        fontSize: '13px',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="Público">Público</option>
+                      <option value="Privado">Privado</option>
+                    </select>
+                  </div>
                 </div>
+
                 <div>
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">ORIGEN CAPITAL</label>
-                  <select
-                    value={origen}
-                    onChange={(e) => setOrigen(e.target.value)}
-                    className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg outline-none bg-slate-50 focus:bg-white focus:border-emerald-500"
-                  >
-                    <option value="Público">Público</option>
-                    <option value="Privado">Privado</option>
-                  </select>
-                </div>
-                <div className="col-span-2">
-                  <label className="text-[11px] font-bold text-slate-400 block mb-1">TIPO FLUJO</label>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-1">TIPO DE FLUJO</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setTipo('ingreso')}
-                      className={`py-2 rounded-lg text-xs font-semibold border ${
+                      className={`py-2 rounded-lg text-xs font-semibold border transition-all ${
                         tipo === 'ingreso' 
-                          ? 'bg-emerald-50 border-emerald-500 text-emerald-700' 
-                          : 'border-slate-200 text-slate-500'
+                          ? 'bg-emerald-500/25 border-emerald-500 text-emerald-400 shadow-sm' 
+                          : 'border-white/10 text-slate-400 hover:bg-white/2'
                       }`}
                     >
                       Ingreso
@@ -332,10 +400,10 @@ export default function MainDashboard() {
                     <button
                       type="button"
                       onClick={() => setTipo('egreso')}
-                      className={`py-2 rounded-lg text-xs font-semibold border ${
+                      className={`py-2 rounded-lg text-xs font-semibold border transition-all ${
                         tipo === 'egreso' 
-                          ? 'bg-rose-50 border-rose-500 text-rose-700' 
-                          : 'border-slate-200 text-slate-500'
+                          ? 'bg-rose-500/25 border-rose-500 text-rose-400 shadow-sm' 
+                          : 'border-white/10 text-slate-400 hover:bg-white/2'
                       }`}
                     >
                       Egreso
@@ -343,9 +411,10 @@ export default function MainDashboard() {
                   </div>
                 </div>
               </div>
+
               <button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-xs flex justify-center items-center gap-1.5 transition-colors"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg text-xs flex justify-center items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <PlusCircle size={14} />
                 Agregar Flujo
@@ -353,9 +422,9 @@ export default function MainDashboard() {
             </form>
 
             {/* Doughnut Chart de Balance Público vs Privado */}
-            <div className="border-t border-slate-100 pt-4 space-y-3">
-              <h4 className="text-xs font-bold text-slate-500 text-center">Distribución Acumulada Activa</h4>
-              <div className="h-44 flex justify-center items-center">
+            <div className="border-t border-white/5 pt-4 space-y-3">
+              <h4 className="text-[10px] font-bold text-slate-400 text-center uppercase tracking-wider">Balance Público vs Privado</h4>
+              <div className="h-40 flex justify-center items-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -363,24 +432,24 @@ export default function MainDashboard() {
                       cx="50%"
                       cy="50%"
                       innerRadius={45}
-                      outerRadius={65}
+                      outerRadius={60}
                       paddingAngle={4}
                       dataKey="value"
                     >
-                      <Cell fill="#0ea5e9" />
-                      <Cell fill="#e879f9" />
+                      <Cell fill="#3b82f6" />
+                      <Cell fill="#d4af37" />
                     </Pie>
-                    <Tooltip formatter={(value) => `$${value.toLocaleString()} COP`} />
+                    <Tooltip content={<CustomTooltip />} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex justify-around text-xs">
-                <span className="flex items-center gap-1.5 font-semibold text-sky-600">
+              <div className="flex justify-around text-[11px] font-semibold">
+                <span className="flex items-center gap-1.5 text-sky-400">
                   <span className="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
                   Público: ${(totalPublico).toLocaleString()}
                 </span>
-                <span className="flex items-center gap-1.5 font-semibold text-fuchsia-600">
-                  <span className="w-2.5 h-2.5 rounded-full bg-fuchsia-400"></span>
+                <span className="flex items-center gap-1.5 text-amber-400">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
                   Privado: ${(totalPrivado).toLocaleString()}
                 </span>
               </div>
@@ -389,12 +458,12 @@ export default function MainDashboard() {
           </div>
 
           {/* SECCIÓN 4: Integración API Indicadores Quindío */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-4">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-              <h3 className="text-lg font-bold text-slate-900">
+          <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className="flex justify-between items-center border-b border-white/5 pb-3">
+              <h3 className="text-base font-bold text-white font-display">
                 Indicadores Quindío
               </h3>
-              <span className="bg-sky-50 border border-sky-100 text-sky-600 px-2 py-0.5 rounded-md text-[10px] font-extrabold flex items-center gap-1">
+              <span className="bg-sky-500/10 border border-sky-500/20 text-sky-400 px-2 py-0.5 rounded-md text-[9px] font-extrabold flex items-center gap-1 tracking-wider uppercase">
                 <Globe size={10} />
                 DATOS API
               </span>
@@ -405,19 +474,19 @@ export default function MainDashboard() {
               <div className="space-y-4 py-2">
                 {[1, 2, 3, 4].map(idx => (
                   <div key={idx} className="space-y-2 animate-pulse">
-                    <div className="h-3.5 bg-slate-200 rounded w-2/3"></div>
-                    <div className="h-5 bg-slate-100 rounded w-1/3"></div>
+                    <div className="h-3 bg-white/10 rounded w-2/3"></div>
+                    <div className="h-5 bg-white/5 rounded w-1/3"></div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {indicadoresApi.map(item => (
-                  <div key={item.id} className="p-3 bg-slate-50 border border-slate-100 rounded-xl hover:bg-slate-50/80 transition-colors">
-                    <span className="text-xs text-slate-400 block font-medium">{item.nombre}</span>
+                  <div key={item.id} className="p-3 bg-white/2 border border-white/5 rounded-xl hover:bg-white/4 transition-colors">
+                    <span className="text-[11px] text-slate-400 block font-medium">{item.nombre}</span>
                     <div className="flex justify-between items-baseline mt-1">
-                      <span className="text-lg font-bold text-slate-800">{item.valor}</span>
-                      <span className="text-[10px] text-slate-500 font-semibold">{item.sub}</span>
+                      <span className="text-base font-bold text-white">{item.valor}</span>
+                      <span className="text-[10px] text-slate-400">{item.sub}</span>
                     </div>
                   </div>
                 ))}
