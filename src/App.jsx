@@ -7,6 +7,7 @@ import TransactionList from './components/TransactionList';
 import SavingsGoals from './components/SavingsGoals';
 import InvestmentCalc from './components/InvestmentCalc';
 import ApiIndicators from './components/ApiIndicators';
+import MainDashboard from './components/MainDashboard';
 import { Calendar, HelpCircle, Trees, Shield } from 'lucide-react';
 
 export default function App() {
@@ -120,18 +121,7 @@ export default function App() {
 
         {/* Dynamic Navigation Content */}
         {activeTab === 'dashboard' && (
-          <div className="animate-fade-in">
-            <SummaryCards
-              cafeProduccion={cafeProduccion}
-              turistasMes={turistasMes}
-              saldoPresupuesto={saldoPresupuesto}
-            />
-            <ChartsSection transacciones={transacciones} />
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
-              <TransactionList transacciones={transacciones} />
-              <SavingsGoals metas={metas} onAportar={handleAportarMeta} />
-            </div>
-          </div>
+          <MainDashboard />
         )}
 
         {activeTab === 'api_data' && (
