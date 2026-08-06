@@ -111,64 +111,6 @@ export default function MainDashboard() {
   return (
     <div className="text-slate-200 space-y-6 animate-fade-in" style={{ padding: '0px' }}>
       
-      {/* SECCIÓN 3: Monitor de Café y Cosechas */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2 font-display">
-          <Coffee size={20} className="text-amber-500" />
-          Monitor de Café y Cosechas
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Card 1 */}
-          <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid var(--accent-gold)' }}>
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Volumen Producido</p>
-                <h4 className="text-2xl font-bold text-white mt-1">15,300 Sacos</h4>
-                <div className="flex items-center gap-1 text-emerald-400 text-xs font-semibold mt-2">
-                  <TrendingUp size={14} />
-                  <span>+12.4% vs mes anterior</span>
-                </div>
-              </div>
-              <div className="bg-amber-500/10 p-3 rounded-xl text-amber-400 border border-amber-500/20">
-                <Coffee size={20} />
-              </div>
-            </div>
-          </div>
-          {/* Card 2 */}
-          <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid var(--accent-green-light)' }}>
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Proyección de Cosecha</p>
-                <h4 className="text-2xl font-bold text-white mt-1">18,500 Sacos</h4>
-                <div className="flex items-center gap-1 text-emerald-400 text-xs font-semibold mt-2">
-                  <TrendingUp size={14} />
-                  <span>+5.1% proyectado</span>
-                </div>
-              </div>
-              <div className="bg-emerald-500/10 p-3 rounded-xl text-emerald-400 border border-emerald-500/20">
-                <Leaf size={20} />
-              </div>
-            </div>
-          </div>
-          {/* Card 3 */}
-          <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid #3b82f6' }}>
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Rendimiento por Hectárea</p>
-                <h4 className="text-2xl font-bold text-white mt-1">1.45 Ton/Ha</h4>
-                <div className="flex items-center gap-1 text-rose-400 text-xs font-semibold mt-2">
-                  <TrendingDown size={14} />
-                  <span>-2.3% por lluvias</span>
-                </div>
-              </div>
-              <div className="bg-sky-500/10 p-3 rounded-xl text-sky-400 border border-sky-500/20">
-                <Layers size={20} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Grid: Dos columnas para distribuir los módulos principales */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         

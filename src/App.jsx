@@ -93,7 +93,7 @@ export default function App() {
               Estadísticas del Departamento de Quindío
             </h1>
             <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-              Monitor oficial y simulador de desarrollo regional, café y turismo.
+              Plataforma prospectiva y análisis de indicadores multidimensionales del Quindío.
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -121,7 +121,14 @@ export default function App() {
 
         {/* Dynamic Navigation Content */}
         {activeTab === 'dashboard' && (
-          <MainDashboard />
+          <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <SummaryCards
+              cafeProduccion={cafeProduccion}
+              turistasMes={turistasMes}
+              saldoPresupuesto={saldoPresupuesto}
+            />
+            <MainDashboard />
+          </div>
         )}
 
         {activeTab === 'api_data' && (
