@@ -41,7 +41,7 @@ export default function Sidebar({ activeTab, setActiveTab }) {
               Quindío
             </h2>
             <p style={{ fontSize: '12px', color: 'var(--accent-gold)', fontWeight: '600', textTransform: 'uppercase' }}>
-              Estadísticas Premium
+              Estadísticas Regionales
             </p>
           </div>
         </div>
@@ -96,6 +96,9 @@ export default function Sidebar({ activeTab, setActiveTab }) {
         <p style={{ fontSize: '11px', lineHeight: '1.4' }}>
           Visualización en tiempo real de indicadores del Quindío.
         </p>
+        <div style={{ marginTop: '8px', fontSize: '10px', color: 'var(--accent-gold)' }}>
+          Versión Online: 06/08/2026 15:17
+        </div>
       </div>
     </aside>
   );
